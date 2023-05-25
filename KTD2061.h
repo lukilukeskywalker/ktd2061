@@ -114,14 +114,52 @@ typedef enum{
     TEMP_120 = KTD2061_CONTROL_CE_TEMP_120,
     TEMP_135 = KTD2061_CONTROL_CE_TEMP_135,
     } ktd_temp_t;
-     
+
+/*! @briefResets the ktd2061 chip and sets it in the init state
+    @param ktd Pointer to the driver handle*/ 
 void ktd2061_init(const ktd2061_t *ktd);
+/*! @briefSets the mode of the driver and the fade rate
+    @param ktd Pointer to the driver handle
+    @param mode Enum mode, lets you choose one of the 4 avaliable modes: NORMAL, NIGHT, OFF, RESET
+    @param fade uint8_t (~enum) fade, lets you choose one of the 8 avaliable fade rates
+    */
 void ktd2061_mode(const ktd2061_t *ktd, ktd_mode_t mode, uint8_t fade);
+
+/*! 
+*   @brief Sets the temperature at which the driver will throtle power delivered to the leds
+*   @param ktd Pointer to the driver handle
+*   @param temperature Enum temperature, lets you choose one of the 4 avaliable throtle temps: KTD2061_CONTROL_CE_TEMP_90, KTD2061_CONTROL_CE_TEMP_105, KTD2061_CONTROL_CE_TEMP_120, KTD2061_CONTROL_CE_TEMP_135
+*/
 void ktd2061_Temp_Setting(const ktd2061_t *ktd, ktd_temp_t temperature);
+/*! @brief Enables or disables the Bright Extend option in the driver
+    @param ktd Pointer to the driver handle
+    @param enable Bool to enable or disable the function
+    */
 void ktd2061_Bright_Extend_Setting(const ktd2061_t *ktd, bool enable);
+/*! @brief Sets the Color 0 register in the driver.
+    @param ktd Pointer to the driver handle
+    @param Color Pointer to RGBColor struct
+    */
 void ktd2061_write_Color0(const ktd2061_t *ktd, RgbColor_t *Color);
+/*! @brief Sets the Color 1 register in the driver
+    @param ktd Pointer to the driver handle
+    @param Color Pointer to RGBColor Struct
+    */
 void ktd2061_write_Color1(const ktd2061_t *ktd, RgbColor_t *Color);
+/*! @brief Activates the output of the channels specified in the channels param.
+    @param ktd Pointer to the driver handle
+    @param channels Selects which channel have to be set on. led 0 is LSB in the parameter
+    */
 void ktd2061_setChannelOn(const ktd2061_t *ktd, uint16_t channels);
+/*! @brief Deactivates the output of the chanlles specified in the channels param.
+    @param ktd Pointer to the driver handle
+    @param channels Selects which channels have to set off
+    */
 void ktd2061_setChannelOff(const ktd2061_t *ktd, uint16_t channels);
+/*! @brief Selects what combination of the 2 saved colors in the color reg is shown on the passed channels. 
+    @param ktd Pointer to the driver handle
+    @param channels Selects which channels have to be set to what selected combination of the 2 stored colors
+    @param setting Sets the combination of the two colors, 0 bit is B, 1 bit is G and 2 bit is R. Setting a 1 in each bit chooses color reg 1 component setting a 0 chooses color reg 0 
+    */
 void ktd2061_selectColorRegister(const ktd2061_t *ktd, uint16_t channels, uint8_t setting);
 #endif

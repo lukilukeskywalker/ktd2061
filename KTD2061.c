@@ -81,6 +81,23 @@ void ktd2061_selectColorRegister(const ktd2061_t *ktd, uint16_t channels, uint8_
      */
     uint8_t *value = malloc(sizeof(uint8_t)*6);
     ktd->read(ktd->handle, KTD2061_REG_ISELA12, value, 6);
+    //setting = BITMASK_SET(setting, 0x7, 0x0);   //Filtro para que no se pueda meter un bit que pueda joder la conf de on o off
+    setting &= 0x7; 
+    for(int i=0; i<6; i++){ //Compute which ones have to be changed
+        value[i] =  (value[i] & 0x88) |
+                    (0x70 &(((channels >> 11)&0x01)!= 0 ? (setting << 4) : value[i])) |    //Ahora si los bits no deben ser clereados contendran el valor original
+                    (0x07 &(((channels >> 10)&0x01)!= 0 ? setting : value[i]));
+        //So first we evaluate if the setting applies for this led or not, if it applies then we write the setting
+        //value[i] = BITMASK_SET(value[i], ~pin_conf, pin_conf);  //Asi que ahora puedo clerear siempre, que voy a reescribir el valor que debe de tener
+        BITSHIFT_LEFT(channels, 2);
+    }
+    ktd->write(ktd->handle, KTD2061_REG_ISELA12, value, 6);
+    free(value);
+
+    //OLD
+    /*
+    uint8_t *value = malloc(sizeof(uint8_t)*6);
+    ktd->read(ktd->handle, KTD2061_REG_ISELA12, value, 6);
     for(int i=0; i<6; i++){ //Compute which ones have to be changed
         uint8_t pin_conf =  (0x70 & (((channels >> 11)&0x01)!= 0 ? (setting << 4) : 0)) |    
                             (0x07 & (((channels >> 10)&0x01)!= 0 ? setting : 0));
@@ -90,7 +107,9 @@ void ktd2061_selectColorRegister(const ktd2061_t *ktd, uint16_t channels, uint8_
     }
     ktd->write(ktd->handle, KTD2061_REG_ISELA12, value, 6);
     free(value);
+    */
 }
+
 
 
 
